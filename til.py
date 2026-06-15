@@ -22,19 +22,20 @@ def add(log, tag):
         with open("til.json", "r") as file:
             file_data = json.load(file)
     else:
-        file_data = []
+        file_data = {"entries": []}
 
-    # handle if tag is left out or not
-    actual_tag = tag if tag else "Misc"
+    entries_list = file_data["entries"]
 
     # If the file has data, extract the largest ID. Otherwise, start at 0.
-    if file_data:
-        largest_id = max(log.get("id", 0) for log in file_data)
+    if entries_list:
+        largest_id = max(item.get("id", 0) for item in entries_list)
     else:
         largest_id = 0
 
     next_id = largest_id + 1
-
+    # handle if tag is left out or not
+    actual_tag = tag if tag else "Misc"
+    
     # craete a dict to handle log data 
     new_log = {
         "id" : next_id,
@@ -43,7 +44,7 @@ def add(log, tag):
         "datestamp": dt.datetime.now().strftime("%Y-%m-%d")
     }
 
-    file_data.append(new_log)
+    entries_list.append(new_log)
 
     with open("til.json", "w") as file:
         json.dump(file_data, file, indent=4)
