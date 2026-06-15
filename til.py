@@ -9,10 +9,10 @@ import os
 def cli():
     pass
 
-@click.command()
+@cli.command()
 @click.option('--tag', type=click.STRING, help='Creates a tag to allow for searching.')
 @click.version_option("1.0", prog_name="til")
-@click.argument("log")
+@click.argument("log", type=click.STRING)
 def add(log, tag):
     """This adds a log to the TIL.json"""
     click.echo("Logging your notes...")
