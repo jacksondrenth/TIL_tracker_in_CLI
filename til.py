@@ -5,6 +5,10 @@ import json
 import datetime as dt
 import os
 from pprint import pprint
+from storage import save_entries, load_entries
+
+# global variables
+til_file = "til.json"
 
 @click.group()
 def cli():
@@ -17,12 +21,9 @@ def cli():
 def add(log, tag):
     """This adds a log to the TIL.json"""
     click.echo("Logging your notes...")
-    # Handle missing or empty file safely
-    if os.path.exists("til.json") and os.path.getsize("til.json") > 0:
-        with open("til.json", "r") as file:
-            file_data = json.load(file)
-    else:
-        file_data = {"entries": []}
+
+    file_data = load_entries(til_file)
+
 
     entries_list = file_data["entries"]
 
@@ -46,20 +47,14 @@ def add(log, tag):
 
     entries_list.append(new_log)
 
-    with open("til.json", "w") as file:
-        json.dump(file_data, file, indent=4)
+    save_entries(til_file, file_data)
 
     click.echo("Notes logged!")
 
 @cli.command()
 def list():
-    # Handle missing or empty file safely
-    if os.path.exists("til.json") and os.path.getsize("til.json") > 0:
-        with open("til.json", "r") as file:
-            file_data = json.load(file)
-    else:
-        click.echo("You have no data in your TIL.json, maybe add something you learned today!")
-        pass
+    """Lists all entries in json file"""
+    file_data = load_entries(til_file)
     
     if file_data:
         pprint(file_data)
