@@ -2,7 +2,7 @@
 
 from rich.console import Console
 from rich.table import Table
-from storage import save_entries, load_entries
+from storage import save_entries, load_entries, make_table
 import click
 import datetime as dt
 
@@ -56,30 +56,30 @@ def list():
 
     # load data
     file_data = load_entries(til_file)
-
-    # have a guard if there aren't any entries yet
-    if not file_data["entries"]:
-        click.echo("No entries yet, add something you've learned today!")
-        return
+    entries = file_data.get("entries", [])
     
-    # create table
-    table = Table(title="TIL Entries")
-    # create table columns
-    table.add_column("Datestamp", justify="center", style="cyan", no_wrap=True)
-    table.add_column("Entry", justify="center", style="magenta")
-    table.add_column("Tag", justify="center", style="green")
+    make_table(entries)
+
+@cli.command()
+@click.argument("query", type=click.STRING)
+def search(query):
+    """This allows to query the logs, the query will be log text only, / 
+    it should also have options, so you can filter on tag, date, and id"""
+    file_data = load_entries("til.json")
+
+    entries = file_data.get("entries", [])
+
+    matching_logs = [
+        item for item in entries 
+        if query.lower() in item.get("log", "").lower()
+        ]
     
-    # create rows
-    for entry in file_data["entries"]:
+    make_table(matching_logs)
 
-        entry_tag = entry["tag"]
-        entry_log = entry["log"]
-        entry_date = entry["datestamp"]
-
-        table.add_row(entry_tag, entry_log, entry_date)
-
-    console = Console()
-    console.print(table)
+@cli.command()
+def stats():
+    """This shows the number of entries, count of entries per tag, and /
+    A simple streak: how many consecutive days you've logged something"""
 
 if __name__ == "__main__":
     cli()
