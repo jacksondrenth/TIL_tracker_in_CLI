@@ -5,7 +5,7 @@ import os
 
 def load_entries(file_path):
     """Loads content of a json file"""
-    if os.path.exists(file_path) and os.path.getsize("til.json") > 0:
+    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
         with open(file_path, "r") as file:
                 file_data = json.load(file)
     else:

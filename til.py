@@ -53,14 +53,22 @@ def add(log, tag):
 @cli.command()
 def list():
     """Lists all entries in json file"""
+
+    # load data
+    file_data = load_entries(til_file)
+
+    # have a guard if there aren't any entries yet
+    if not file_data["entries"]:
+        click.echo("No entries yet, add something you've learned today!")
+        return
+    
     # create table
     table = Table(title="TIL Entries")
     # create table columns
     table.add_column("Datestamp", justify="center", style="cyan", no_wrap=True)
     table.add_column("Entry", justify="center", style="magenta")
     table.add_column("Tag", justify="center", style="green")
-    # load data
-    file_data = load_entries(til_file)
+    
     # create rows
     for entry in file_data["entries"]:
 
